@@ -18,18 +18,19 @@ const Router = (server) => {
         }
     })
     server.use('/v1/auth', Auth);
-    };
-    app.get("/v1/user", Verify, (req, res) => {
+
+    server.get("/v1/user", Verify, (req, res) => {
         res.status(200).json({
             status: "success",
             message: "Welcome to the your Dashboard!",
         });
     });
 
-    app.get("/v1/admin", Verify, VerifyRole, (req, res) => {
+    server.get("/v1/admin", Verify, VerifyRole, (req, res) => {
         res.status(200).json({
             status: "success",
             message: "Welcome to the Admin portal!",
         });
     });
+};
 export default Router;
