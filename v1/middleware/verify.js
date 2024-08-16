@@ -1,3 +1,9 @@
+import Blacklist from '../models/blacklist.js'
+import User from "../models/user.js";
+import jwt from "jsonwebtoken";
+import { config } from 'dotenv';
+import { SECRET_ACCESS_TOKEN } from '../config/index.js';
+
 export async function Verify(req, res, next) {
     try {
         const authHeader = req.headers["cookie"]; // get the session cookie from request header
@@ -16,7 +22,7 @@ export async function Verify(req, res, next) {
 
         // Verify using jwt to see if token has been tampered with or if it has expired.
         // that's like checking the integrity of the cookie
-        jwt.verify(cookie, config.SECRET_ACCESS_TOKEN, async (err, decoded) => {
+        jwt.verify(accessToken, SECRET_ACCESS_TOKEN, async (err, decoded) => {
             if (err) {
                 // if token has been altered or has expired, return an unauthorized error
                 return res
@@ -31,6 +37,7 @@ export async function Verify(req, res, next) {
             next();
         });
     } catch (err) {
+        console.log(err)
         res.status(500).json({
             status: "error",
             code: 500,

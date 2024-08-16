@@ -62,4 +62,4 @@ UserSchema.methods.generateAccessJWT = function () {
     });
   };
 
-export default mongoose.model("users", UserSchema);
+export default mongoose.model("User", UserSchema);
