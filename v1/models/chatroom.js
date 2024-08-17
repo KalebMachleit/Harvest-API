@@ -13,8 +13,7 @@ const chatRoomSchema = new mongoose.Schema(
       default: () => uuidv4().replace(/\-/g, ""),
     },
     userEmails: Array,
-    type: String,
-    chatInitiator: String,
+    type: String
   },
   {
     timestamps: true,
@@ -53,7 +52,7 @@ chatRoomSchema.statics.getChatRoomByRoomId = async function (roomId) {
  * @param {String} chatInitiator - user who initiated the chat
  * @param {CHAT_ROOM_TYPES} type
  */
-chatRoomSchema.statics.initiateChat = async function (userIds, type, chatInitiator) {
+chatRoomSchema.statics.initiateChat = async function (userIds, type) {
   try {
     const availableRoom = await this.findOne({
       userIds: {
@@ -71,7 +70,7 @@ chatRoomSchema.statics.initiateChat = async function (userIds, type, chatInitiat
       };
     }
 
-    const newRoom = await this.create({ userIds, type, chatInitiator });
+    const newRoom = await this.create({ userIds, type});
     return {
       isNew: true,
       message: 'creating a new chatroom',

@@ -20,12 +20,13 @@ const Router = (server) => {
     })
     server.use('/v1/auth', Auth);
 
-    server.use('/v1/user/room', ChatRoomRouter)
+    server.use('/v1/user/room', Verify, ChatRoomRouter)
 
     server.get("/v1/user", Verify, (req, res) => {
         res.status(200).json({
             status: "success",
             message: "Welcome to the your Dashboard!",
+            email: req.user.email
         });
     });
 
