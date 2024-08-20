@@ -64,7 +64,7 @@ chatMessageSchema.statics.createPostInChatRoom = async function (chatRoomId, mes
         $lookup: {
           from: 'users',
           localField: 'postedByUser',
-          foreignField: '_id',
+          foreignField: 'email',
           as: 'postedByUser',
         }
       },
@@ -87,7 +87,7 @@ chatMessageSchema.statics.createPostInChatRoom = async function (chatRoomId, mes
         $lookup: {
           from: 'users',
           localField: 'chatRoomInfo.userIds',
-          foreignField: '_id',
+          foreignField: 'email',
           as: 'chatRoomInfo.userProfile',
         }
       },
@@ -196,7 +196,7 @@ chatMessageSchema.statics.getRecentConversation = async function (chatRoomIds, o
         $lookup: {
           from: 'users',
           localField: 'postedByUser',
-          foreignField: '_id',
+          foreignField: 'email',
           as: 'postedByUser',
         }
       },
@@ -206,19 +206,19 @@ chatMessageSchema.statics.getRecentConversation = async function (chatRoomIds, o
       {
         $lookup: {
           from: 'chatrooms',
-          localField: '_id',
+          localField: 'chatRoomId',
           foreignField: '_id',
           as: 'roomInfo',
         }
       },
       { $unwind: "$roomInfo" },
-      { $unwind: "$roomInfo.userIds" },
+      { $unwind: "$roomInfo.userEmails" },
       // do a join on another table called users 
       {
         $lookup: {
           from: 'users',
-          localField: 'roomInfo.userIds',
-          foreignField: '_id',
+          localField: 'roomInfo.userEmails',
+          foreignField: 'email',
           as: 'roomInfo.userProfile',
         }
       },
@@ -228,7 +228,7 @@ chatMessageSchema.statics.getRecentConversation = async function (chatRoomIds, o
         $lookup: {
           from: 'users',
           localField: 'readByRecipients.readByUserId',
-          foreignField: '_id',
+          foreignField: 'email',
           as: 'readByRecipients.readByUser',
         }
       },
@@ -242,7 +242,7 @@ chatMessageSchema.statics.getRecentConversation = async function (chatRoomIds, o
           type: { $last: '$type' },
           postedByUser: { $last: '$postedByUser' },
           readByRecipients: { $addToSet: '$readByRecipients' },
-          roomInfo: { $addToSet: '$roomInfo.userProfile' },
+          roomInfo: { $addToSet: '$roomInfo' },
           createdAt: { $last: '$createdAt' },
         },
       },
@@ -251,6 +251,7 @@ chatMessageSchema.statics.getRecentConversation = async function (chatRoomIds, o
       { $limit: options.limit },
     ]);
   } catch (error) {
+    console.log(error)
     throw error;
   }
 }

@@ -10,6 +10,7 @@ export default {
     try {
       const { userEmails, type } = req.body;
       const allUserIds = [...userEmails];
+      console.log(allUserIds)
       const chatRoom = await ChatRoomModel.initiateChat(allUserIds, type);
       return res.status(200).json({ success: true, chatRoom });
     } catch (error) {

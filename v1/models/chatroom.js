@@ -25,9 +25,9 @@ const chatRoomSchema = new mongoose.Schema(
  * @param {String} userId - id of user
  * @return {Array} array of all chatroom that the user belongs to
  */
-chatRoomSchema.statics.getChatRoomsByUserId = async function (userId) {
+chatRoomSchema.statics.getChatRoomsByUserId = async function (userEmail) {
   try {
-    const rooms = await this.find({ userIds: { $all: [userId] } });
+    const rooms = await this.find({ userEmails: { $all: [userEmail] } });
     return rooms;
   } catch (error) {
     throw error;
@@ -52,12 +52,12 @@ chatRoomSchema.statics.getChatRoomByRoomId = async function (roomId) {
  * @param {String} chatInitiator - user who initiated the chat
  * @param {CHAT_ROOM_TYPES} type
  */
-chatRoomSchema.statics.initiateChat = async function (userIds, type) {
+chatRoomSchema.statics.initiateChat = async function (userEmails, type) {
   try {
     const availableRoom = await this.findOne({
-      userIds: {
-        $size: userIds.length,
-        $all: [...userIds],
+      userEmails: {
+        $size: userEmails.length,
+        $all: [...userEmails],
       },
       type,
     });
@@ -70,7 +70,7 @@ chatRoomSchema.statics.initiateChat = async function (userIds, type) {
       };
     }
 
-    const newRoom = await this.create({ userIds, type});
+    const newRoom = await this.create({ userEmails, type});
     return {
       isNew: true,
       message: 'creating a new chatroom',
