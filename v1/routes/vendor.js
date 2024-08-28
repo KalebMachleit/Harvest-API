@@ -15,5 +15,5 @@ router
         .withMessage('please input an address'),
         vendor.create
     )
-
+    .get('/getInRange', vendor.findLocal)
 export default router

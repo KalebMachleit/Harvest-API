@@ -37,15 +37,18 @@ const VendorProfileSchema = new mongoose.Schema(
 
 VendorProfileSchema.statics.getNearbyVendors = async function (d, latitude, longitude) {
     try {
+        let R = 3958.8
         const lat = latitude * Math.PI / 180
         const long = longitude * Math.PI / 180
-        //calculate for search paramaters given range and current location using the Havsersine Formula
-        let latRange = [(lat + (d / R)), (lat - (d / R))]
-        let longRange = [(2 * (Math.asin((1 / Math.cos(lat)) * Math.sin(d / (2 * R)))) + long), (2 * (Math.asin((-1 / Math.cos(lat)) * Math.sin(d / (2 * R)))) + long)]
+        let latRange = [(lat + (d / R)) * (180/Math.PI), (lat - (d / R)) * (180/Math.PI)]
+        let longRange = [(2 * (Math.asin((1/Math.cos(lat)) * Math.sin(d / (2 * R)))) + long) * (180/Math.PI), (2 * (Math.asin((-1/Math.cos(lat)) * Math.sin(d / (2 * R)))) + long) * (180/Math.PI)]
+        // Using Haversine formula to calculate search range
         let results = await this.find({
-            latitude: { $gte: latRange[0], $lt: latRange[1] },
-            longitude: { $gte: longRange[0], $lt: longRange[1] }
+            latitude: { $gte: latRange[1], $lt: latRange[0] },
+            longitude: { $gte: longRange[1], $lt: longRange[0] }
         })
+        console.log(d + latitude + longitude)
+        console.log(latRange + ' ' + longRange)
         return results
     } catch (err) {
         throw err
@@ -71,8 +74,8 @@ VendorProfileSchema.pre("save", async function (next) {
             const response = await axios.get(`https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=` + thing + '&benchmark=4&format=json')
                 .then((response) => {
                     const coords = response.data.result.addressMatches[0].coordinates
-                    vendor.latitude = coords.x
-                    vendor.longitude = coords.y
+                    vendor.latitude = coords.y
+                    vendor.longitude = coords.x
                 })
         } catch (err) {
             console.log(err)

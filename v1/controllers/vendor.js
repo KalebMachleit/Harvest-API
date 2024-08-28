@@ -35,5 +35,21 @@ export default {
                 message: "Internal Server Error",
             });
         }
+    },
+    findLocal: async (req, res) => {
+        const { range, lat, long } = req.query
+        try{
+            const vendors = await VendorModel.getNearbyVendors(range, lat, long)
+            res.status(200).json({
+                success: "true",
+                vendors
+            })
+        } catch (err) {
+            console.log(err)
+            return res.status(500).json({
+                success: "false",
+                error: err
+            })
+        }
     }
 }
