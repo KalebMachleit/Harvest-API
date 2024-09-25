@@ -26,6 +26,9 @@ const VendorProfileSchema = new mongoose.Schema(
             type: Array,
             required: "Please connect an email."
         },
+        ownerEmail: {
+            type: String
+        },
         latitude: {
             type: Number
         },
@@ -47,9 +50,17 @@ VendorProfileSchema.statics.getNearbyVendors = async function (d, latitude, long
             latitude: { $gte: latRange[1], $lt: latRange[0] },
             longitude: { $gte: longRange[1], $lt: longRange[0] }
         })
-        console.log(d + latitude + longitude)
-        console.log(latRange + ' ' + longRange)
         return results
+    } catch (err) {
+        throw err
+    }
+}
+
+VendorProfileSchema.statics.getById = async function (id) {
+    const vendor = this
+    try {
+        const response = await this.findOne({_id: id})
+        return response
     } catch (err) {
         throw err
     }
@@ -61,7 +72,7 @@ VendorProfileSchema.pre("save", async function (next) {
     if (!vendor.latitude && !vendor.longitude) {
         //break address into parts
         const spl = vendor.address.split("_")
-        //combine address back together in url friendly formal
+        //combine address back together in url friendly format
         let thing = ''
         for (let i = 0; i < spl.length; i++) {
             thing += spl[i]

@@ -4,13 +4,15 @@ import Vendor from '../models/vendor.js'
 export default {
     create: async (req, res) => {
         const { name, address, selling, bio, emails} = req.body
+        const ownerEmail = req.user.email
         try {
             const newVendor = new Vendor({
                 name,
                 address,
                 selling,
                 bio,
-                emails
+                emails,
+                ownerEmail
             })
             const existingVendor = await Vendor.findOne({address})
             if (existingVendor) {

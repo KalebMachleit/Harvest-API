@@ -250,6 +250,7 @@ chatMessageSchema.statics.getRecentConversation = async function (chatRoomIds, o
       { $skip: options.page * options.limit },
       { $limit: options.limit },
     ]);
+    // const rooms = 
   } catch (error) {
     console.log(error)
     throw error;

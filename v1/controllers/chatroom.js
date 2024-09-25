@@ -4,14 +4,19 @@
 import ChatRoomModel, { CHAT_ROOM_TYPES } from '../models/chatroom.js';
 import ChatMessageModel from '../models/chatmessage.js'
 import UserModel from '../models/user.js';
+import VendorModel from '../models/vendor.js'
 
 export default {
   initiate: async (req, res) => {
     try {
-      const { userEmails, type } = req.body;
-      const allUserIds = [...userEmails];
+      const { type, vendorId } = req.body;
+      const initiator = req.user.email
+      const vendor = await VendorModel.getById(vendorId)
+      console.log(vendor)
+      const vendorEmails = vendor.emails
+      const allUserIds = [initiator, ...vendorEmails];
       console.log(allUserIds)
-      const chatRoom = await ChatRoomModel.initiateChat(allUserIds, type);
+      const chatRoom = await ChatRoomModel.initiateChat(allUserIds, type, initiator);
       return res.status(200).json({ success: true, chatRoom });
     } catch (error) {
       console.log('error: ' + error)
@@ -41,6 +46,7 @@ export default {
       };
       const rooms = await ChatRoomModel.getChatRoomsByUserId(currentLoggedUser);
       const roomIds = rooms.map(room => room._id);
+      
       const recentConversation = await ChatMessageModel.getRecentConversation(
         roomIds, options, currentLoggedUser
       );
